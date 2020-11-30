@@ -1,0 +1,70 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 2
+  tags:
+  - Items
+  - Enemy
+  - DeathArea
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - 
+  - Water
+  - UI
+  - 
+  - 
+  - Ground
+  - Mask
+  - FrontGround
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Default
+    uniqueID: 0
+    locked: 0
+  - name: Background
+    uniqueID: 2719562795
+    locked: 0
+  - name: Environment
+    uniqueID: 1836704121
+    locked: 0
+  - name: Items
+    uniqueID: 2311865069
+    locked: 0
+  - name: Player
+    uniqueID: 3525367549
+    locked: 0
+  - name: Enemy
+    uniqueID: 298030949
+    locked: 0
+  - name: Ground
+    uniqueID: 196528843
+    locked: 0
+  - name: Frontground
+    uniqueID: 3934340787
+    locked: 0
+  - name: UI
+    uniqueID: 3780519963
+    locked: 0
