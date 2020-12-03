@@ -33,6 +33,7 @@ public class PlayerManager : MonoBehaviour {
     private int jumpCount;
     private float horizontalmove = 0;
     public float hurtIntervalTime = 0.5f;
+    public float animCurrentIntervalTime = 0f;
     // ------------- handler start------------
     void Start () {
         init ();
@@ -45,8 +46,7 @@ public class PlayerManager : MonoBehaviour {
     void FixedUpdate () {
         updateState ();
         playerAction ();
-        switchAnim1 ();
-        // switchAnim ();
+        switchAnim ();
         switchAudio ();
     }
     // 接触处理
@@ -63,8 +63,9 @@ public class PlayerManager : MonoBehaviour {
 
         if (otherObj.tag == "Enemy") { // 接触敌人
             Debug.Log ("p:" + contact.point);
+            Debug.Log (Utils.isBeTrampleOn (contact.point, otherObj));
             if (Utils.isBeTrampleOn (contact.point, otherObj)) { //判断敌人是否被踩
-                // rb.velocity = new Vector2 (rb.velocity.x, jumpForce * 0.5f); //踩完弹起
+                rb.velocity = new Vector2 (rb.velocity.x, jumpForce * 0.8f); //踩完弹起
             } else if (!isHurt) { // 碰到敌人,受伤后弹
                 // FIXME 踩敌人还会触发受伤问题
                 isHurt = true;
@@ -127,7 +128,8 @@ public class PlayerManager : MonoBehaviour {
         }
     }
     // 动画切换
-    void switchAnim1 () {
+    void switchAnim () {
+        Debug.Log (isCrouch);
         AnimEnum animName = AnimEnum.Idle;
         if (isHurt) {
             animName = AnimEnum.Hurt;
@@ -147,38 +149,14 @@ public class PlayerManager : MonoBehaviour {
             }
         }
         anim.Play (animName.ToString ());
-    }
-    void switchAnim () {
-        anim.SetBool ("isIdle", false);
-        anim.SetBool ("isRun", isRun);
-        anim.SetBool ("isJump", isJump);
-        anim.SetBool ("isCrouch", isCrouch);
-        if (isHurt) { // 受伤
-            // Debug.Log (anim.GetBool ("isHurt"));
-            anim.SetBool ("isHurt", true);
-            // if (Mathf.Abs (rb.velocity.x) < 0.1f) { //弹开后不再运动才停止受伤动画
-            //     isHurt = false;
-            //     // anim.SetBool ("isHurt", false);
-            // }
-        } else {
-            if (rb.velocity.y <= -1f && !isGround) { // 下降
-                anim.SetBool ("isFall", true);
-            } else {
-                anim.SetBool ("isFall", false);
-            }
-
-            if (isGround) { // 触地
-                anim.SetBool ("isIdle", true);
-            }
-        }
-
+        animCurrentIntervalTime = anim.GetCurrentAnimatorStateInfo (0).length;
     }
     void switchAudio () {
-        // if (jumpPressed && isJump) {
+        // if (jumpPressed && jumpCount > 0) {
         //     jumpAudio.Play ();
         // }
         if (isHurt && !hurtAudio.isPlaying) {
-            // hurtAudio.Play ();
+            hurtAudio.Play ();
         }
 
     }
@@ -223,11 +201,13 @@ public class PlayerManager : MonoBehaviour {
     // 下蹲
     void Crouch () {
         if ((coll.size.y != collSourceSize.y) && (Physics2D.OverlapCircle (collAllPoints[0], 0.3f, ground) || Physics2D.OverlapCircle (collAllPoints[1], 0.3f, ground))) {
+            // 刚体缩小,且头顶有其他碰撞体压着
             isCrouch = true;
         } else {
-            isCrouch = crouchPressed;
+            isCrouch = crouchPressed && isGround;
         }
         if (isCrouch) {
+            // 蹲下则减少碰撞体大小
             float dis = collSourceSize.y * 0.4f;
             coll.size = new Vector2 (collSourceSize.x, collSourceSize.y - dis);
             coll.offset = new Vector2 (collSourceOffset.x, collSourceOffset.y - dis * 0.5f);

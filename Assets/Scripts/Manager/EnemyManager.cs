@@ -41,7 +41,6 @@ public class EnemyManager : MonoBehaviour {
         ContactPoint2D contact = other.contacts[0];
 
         if (otherObj.tag == "Player" && Utils.isBeTrampleOn (contact.point, gameObject)) {
-            Debug.Log ("e: " +contact.point);
             Death ();
         }
     }
