@@ -1,23 +1,38 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class ItemManager : MonoBehaviour {
     private Observer observer;
-    public AudioSource destoryAudio;
+    private AudioSource destoryAudio;
+    private Boolean isDestory = false;
 
     private void Start () {
+        init ();
+    }
+    void init () {
         observer = GetComponent<Observer> ();
         destoryAudio = GetComponent<AudioSource> ();
-        observer.listen (EventEnum.TouchItems, onTouchItems);
     }
-    private void onTouchItems (object sender, System.EventArgs e) {
-        TargetEventArgs _e = (TargetEventArgs) e;
-        if (_e._target == gameObject) {
-            observer.dispatch (EventEnum.ScoreAdd, gameObject, e);
-            // FIXME 抽到音效管理去播放
-            destoryAudio.Play ();
-            Destroy (gameObject);
+    // 接触处理
+    private void OnTriggerEnter2D (Collider2D other) {
+        // 碰了道具
+        if (other.tag == "Player") {
+            onTouchItems ();
         }
+    }
+    private void onTouchItems () {
+        if (!isDestory) {
+            isDestory = true;
+            GetComponent<Collider2D> ().enabled = false;
+            GetComponent<Animator> ().SetTrigger ("Destroy");
+            destoryAudio.Play ();
+            observer.dispatch (EventEnum.ScoreAdd, gameObject);
+        }
+    }
+
+    private void destoryItem () {
+        Destroy (gameObject);
     }
 }

@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class EnemyManager : MonoBehaviour {
-    [SerializeField] protected Rigidbody2D rb;
-    [SerializeField] protected Animator anim;
-    [SerializeField] protected Transform tf;
-    [SerializeField] protected AudioSource deathAudio;
+    protected Rigidbody2D rb;
+    protected Animator anim;
+    protected Transform tf;
+    protected AudioSource deathAudio;
     protected Transform player;
     protected Boolean isMoving;
     float distance, horizontalDirection, verticalDirection;
@@ -16,12 +16,7 @@ public class EnemyManager : MonoBehaviour {
 
     public float speed = 0.5f;
     void Start () {
-        rb = GetComponent<Rigidbody2D> ();
-        anim = GetComponent<Animator> ();
-        tf = GetComponent<Transform> ();
-        sprite = GetComponent<SpriteRenderer> ();
-        deathAudio = GetComponent<AudioSource> ();
-        player = GameObject.Find ("Player").transform;
+        init ();
     }
     protected void FixedUpdate () {
         Moving ();
@@ -30,9 +25,32 @@ public class EnemyManager : MonoBehaviour {
         AnimSwitch ();
     }
 
+    void init () {
+        rb = GetComponent<Rigidbody2D> ();
+        anim = GetComponent<Animator> ();
+        tf = GetComponent<Transform> ();
+        sprite = GetComponent<SpriteRenderer> ();
+        deathAudio = GetComponent<AudioSource> ();
+        player = GameObject.Find ("Player").transform;
+    }
+
+    // 碰撞处理
+    private void OnCollisionEnter2D (Collision2D other) {
+
+        GameObject otherObj = other.gameObject;
+        ContactPoint2D contact = other.contacts[0];
+
+        if (otherObj.tag == "Player" && Utils.isBeTrampleOn (contact.point, gameObject)) {
+            Debug.Log ("e: " +contact.point);
+            Death ();
+        }
+    }
+
     public virtual void Death () {
+        rb.gravityScale = 0;
+        GetComponent<Collider2D> ().enabled = false;
         anim.SetTrigger ("Death");
-        deathAudio.Play();
+        deathAudio.Play ();
     }
     public virtual void OnDeathAnimEnd () {
         Destroy (gameObject);

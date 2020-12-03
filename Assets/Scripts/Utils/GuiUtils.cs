@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class GuiUtils {
-    // Start is called before the first frame update
     public static Boolean isMouseInScreen () {
         Vector3 mousePosition = Input.mousePosition;
         return (mousePosition.x >= 0 && mousePosition.x <= Screen.width) && (mousePosition.y >= 0 && mousePosition.y <= Screen.height);

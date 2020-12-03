@@ -3,5 +3,6 @@
     ScoreAdd,
     TouchItems,
     Hurt,
-    BreakEnemy
+    BreakEnemy,
+    EnterScence
 }

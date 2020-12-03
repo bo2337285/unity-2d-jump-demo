@@ -103,7 +103,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.0473547, y: -0.2664175}
+  m_Offset: {x: 0, y: -0.3}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -114,7 +114,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.70076084, y: 1.0373673}
+  m_Size: {x: 0.7774315, y: 1.4}
   m_EdgeRadius: 0
 --- !u!58 &7762870587106686343
 CircleCollider2D:
@@ -123,15 +123,15 @@ CircleCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7762870587106686348}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Density: 1
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.09548521, y: -0.59008324}
+  m_Offset: {x: -0.006834507, y: -0.59008324}
   serializedVersion: 2
-  m_Radius: 0.38003218
+  m_Radius: 0.38242817
 --- !u!50 &7762870587106686349
 Rigidbody2D:
   serializedVersion: 4
@@ -145,7 +145,7 @@ Rigidbody2D:
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 1
-  m_LinearDrag: 0
+  m_LinearDrag: 2
   m_AngularDrag: 0.05
   m_GravityScale: 1
   m_Material: {fileID: 0}
@@ -165,25 +165,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 04a594bf24bde1940aae40e41599af32, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  circleColl: {fileID: 7762870587106686343}
-  crouchDisColl: {fileID: 7762870587106686338}
   jumpAudio: {fileID: 121688134}
   hurtAudio: {fileID: 121688135}
   speed: 5
-  jumpForce: 5
-  groundCheck: {fileID: 0}
+  jumpForce: 10
   ground:
     serializedVersion: 2
     m_Bits: 256
-  CherryText: {fileID: 0}
-  CherryCount: 0
   isGround: 0
   isJump: 0
   isHurt: 0
-  isRunning: 0
+  isRun: 0
   isCrouch: 0
+  isFall: 0
   jumpCountReset: 2
-  jumpCount: 0
+  hurtIntervalTime: 0.5
 --- !u!95 &7762870587106686342
 Animator:
   serializedVersion: 3

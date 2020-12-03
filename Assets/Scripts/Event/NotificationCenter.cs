@@ -45,7 +45,6 @@ public abstract class INotificationCenter {
     public void PostNotification (EventEnum name, object sender, EventArgs e) {
         int _name = (int) name;
         if (eventTable.ContainsKey (_name)) {
-            Debug.Log (_name);
             eventTable[_name] (sender, e);
         }
     }

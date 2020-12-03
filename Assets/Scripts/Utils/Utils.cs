@@ -1,8 +1,18 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Utils {
+    public static Boolean isBeTrampleOn (Vector2 contactPoint, GameObject beTrampler) {
+        Vector2[] allPoints = GetBoxPoints (beTrampler.GetComponent<Collider2D> ());
+        // player-敌人向量与x轴夹角
+        float angle = getAngle (contactPoint, beTrampler.transform.position);
+        // 敌人碰撞体的左上角/右上角-中心与x轴的夹角
+        float angleMin = getAngle (allPoints[0], beTrampler.transform.position);
+        float angleMax = getAngle (allPoints[1], beTrampler.transform.position);
+        return (angle >= angleMin && angle <= angleMax);
+    }
     // 判断目标对于当前对象的方向, Direction.x : 1 右, -1 左 , Direction.y : 1 上, -1 下
     public static Vector2 getDirection (Transform self, Transform target) {
         Vector3 direction = Vector3.Cross (
@@ -53,4 +63,17 @@ public class Utils {
         return allPoints;
     }
 
+    // 满屏
+    public static void fullScreen (Transform tf) {
+        Camera cam = Camera.main;
+        float pos = (cam.nearClipPlane + 0.01f);
+        float h = (Mathf.Tan (cam.fieldOfView * Mathf.Deg2Rad * 0.5f) * pos * 2f) / 10.0f;
+        tf.localScale = new Vector3 (h * 100 * 3.2f, 1.0f, h * cam.aspect * 100);
+    }
+
+    // 跟随相机
+    public static void followCamera (Transform tf) {
+        Camera mainCamera = Camera.main;
+        tf.position = new Vector3 (mainCamera.transform.position.x, mainCamera.transform.position.y, tf.position.z);
+    }
 }

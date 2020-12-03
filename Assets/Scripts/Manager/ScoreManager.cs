@@ -5,13 +5,18 @@ using UnityEngine.UI;
 
 public class ScoreManager : MonoBehaviour {
     public Text CherryText;
-    private Observer observer;
+    private GamePlay gamePlay;
     void Start () {
-        CherryText = GetComponent<Text> ();
-        observer = GetComponent<Observer> ();
-        observer.listen (EventEnum.ScoreAdd, onScoreAdd);
+        init ();
     }
-    private void onScoreAdd (object sender, System.EventArgs e) {
-        // CherryText.text = gamePlay.score;
+    void Update () {
+        updateScore ();
+    }
+    void init () {
+        gamePlay = FindObjectOfType<GamePlay> ();
+        CherryText = GetComponent<Text> ();
+    }
+    private void updateScore () {
+        CherryText.text = gamePlay.score.ToString ();
     }
 }
