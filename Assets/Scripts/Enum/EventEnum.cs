@@ -4,5 +4,6 @@
     TouchItems,
     Hurt,
     BreakEnemy,
-    EnterScence
+    EnterScence,
+    Input
 }

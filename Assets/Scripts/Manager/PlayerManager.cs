@@ -24,7 +24,7 @@ public class PlayerManager : MonoBehaviour {
     public LayerMask ground;
     private Vector2[] collAllPoints;
     // 状态
-    [SerializeField] public bool isGround, isJump, isHurt, isRun, isCrouch, isFall;
+    [SerializeField] public bool isGroundTouch, isJump, isHurt, isRun, isCrouch, isFall, isHeadTouch;
 
     // 判断是否按了跳跃键
     private bool jumpPressed, crouchPressed;
@@ -33,16 +33,15 @@ public class PlayerManager : MonoBehaviour {
     private int jumpCount;
     private float horizontalmove = 0;
     public float hurtIntervalTime = 0.5f;
-    public float animCurrentIntervalTime = 0f;
+    [SerializeField] float animCurrentIntervalTime = 0f;
+    public Joystick joystick;
     // ------------- handler start------------
     void Start () {
         init ();
     }
     // Update 根据终端频率执行,用于响应事件
     // FixUpdate 固定刷新频率50hz,用于执行动画
-    void Update () {
-        inputListen ();
-    }
+    void Update () { }
     void FixedUpdate () {
         updateState ();
         playerAction ();
@@ -52,6 +51,7 @@ public class PlayerManager : MonoBehaviour {
     // 接触处理
     private void OnTriggerEnter2D (Collider2D other) {
         if (other.tag == "DeathArea") {
+            isHurt = true;
             observer.dispatch (EventEnum.GameOver, gameObject);
         }
     }
@@ -98,19 +98,21 @@ public class PlayerManager : MonoBehaviour {
         tf = GetComponent<Transform> ();
         sprite = GetComponent<SpriteRenderer> ();
         observer = GetComponent<Observer> ();
+        observer.listen (EventEnum.Input, onInput);
     }
-    // 按键监听
-    void inputListen () {
-        jumpPressed = Input.GetButtonDown ("Jump");
-        crouchPressed = Input.GetButton ("Crouch");
-        horizontalmove = Input.GetAxis ("Horizontal");
+    void onInput (object sender, EventArgs e) {
+        InputEventArgs _e = (InputEventArgs) e;
+        jumpPressed = _e.jumpPressed;
+        crouchPressed = _e.crouchPressed;
+        horizontalmove = _e.horizontalmove;
     }
     void updateState () {
         // 获取角色碰撞体矩形顶点
         collAllPoints = Utils.GetBoxPoints (coll);
         // 获取是否触地
-        isGround = Physics2D.OverlapCircle (collAllPoints[2], 0.1f, ground) || Physics2D.OverlapCircle (collAllPoints[3], 0.1f, ground);
-        if (rb.velocity.y <= -1f && !isGround) {
+        isGroundTouch = Physics2D.Raycast (collAllPoints[2], Vector2.down, 0.1f, ground) || Physics2D.Raycast (collAllPoints[3], Vector2.down, 0.1f, ground);
+        isHeadTouch = Physics2D.Raycast (collAllPoints[0], Vector2.up, 0.1f, ground) || Physics2D.Raycast (collAllPoints[1], Vector2.up, 0.1f, ground);
+        if (rb.velocity.y <= -1f && !isGroundTouch) {
             isFall = true;
             isJump = false;
         } else {
@@ -120,7 +122,7 @@ public class PlayerManager : MonoBehaviour {
     void playerAction () {
         if (!isHurt) {
             // 水平移动
-            GroundMovement ();
+            move ();
             // 跳
             Jump ();
             // 下蹲
@@ -129,12 +131,11 @@ public class PlayerManager : MonoBehaviour {
     }
     // 动画切换
     void switchAnim () {
-        Debug.Log (isCrouch);
         AnimEnum animName = AnimEnum.Idle;
         if (isHurt) {
             animName = AnimEnum.Hurt;
         } else {
-            if (isGround) {
+            if (isGroundTouch) {
                 if (isCrouch) {
                     animName = AnimEnum.Crouch;
                 } else if (isRun) {
@@ -162,7 +163,7 @@ public class PlayerManager : MonoBehaviour {
     }
     // 跳跃
     void Jump () {
-        if (isGround && rb.velocity.y < 0.01f) {
+        if (isGroundTouch && rb.velocity.y < 0.01f) {
             // 触地时重置可跳跃次数
             jumpCount = jumpCountReset;
             isJump = false;
@@ -177,7 +178,7 @@ public class PlayerManager : MonoBehaviour {
         }
     }
     // 移动
-    void GroundMovement () {
+    void move () {
         // 刚体移动
         // [-1,0] [0,1]
         // float horizontalmove = Input.GetAxis ("Horizontal");
@@ -200,17 +201,19 @@ public class PlayerManager : MonoBehaviour {
     }
     // 下蹲
     void Crouch () {
-        if ((coll.size.y != collSourceSize.y) && (Physics2D.OverlapCircle (collAllPoints[0], 0.3f, ground) || Physics2D.OverlapCircle (collAllPoints[1], 0.3f, ground))) {
+        if ((coll.size.y != collSourceSize.y) && isHeadTouch) {
             // 刚体缩小,且头顶有其他碰撞体压着
             isCrouch = true;
         } else {
-            isCrouch = crouchPressed && isGround;
+            isCrouch = crouchPressed && isGroundTouch;
         }
         if (isCrouch) {
             // 蹲下则减少碰撞体大小
-            float dis = collSourceSize.y * 0.4f;
-            coll.size = new Vector2 (collSourceSize.x, collSourceSize.y - dis);
-            coll.offset = new Vector2 (collSourceOffset.x, collSourceOffset.y - dis * 0.5f);
+            // float dis = collSourceSize.y * 0.4f;
+            // coll.size = new Vector2 (collSourceSize.x, collSourceSize.y - dis);
+            // coll.offset = new Vector2 (collSourceOffset.x, collSourceOffset.y - dis * 0.5f);
+            coll.size = Vector2.one;
+            coll.offset = new Vector2 (0.05f, -0.5f);
         } else {
             coll.size = collSourceSize;
             coll.offset = collSourceOffset;

@@ -9,16 +9,20 @@ public class GamePlay : MonoBehaviour {
     public int score = 0;
     private Observer observer;
     void Start () {
-        player = GameObject.Find ("Player");
-        observer = GetComponent<Observer> ();
-        observer.listen (EventEnum.ScoreAdd, onScoreAdd);
-        observer.listen (EventEnum.GameOver, onGameOver);
+        init ();
     }
     private void onScoreAdd (object sender, System.EventArgs e) {
         score++;
     }
     private void onGameOver (object sender, System.EventArgs e) {
         Invoke ("restart", 0.5f);
+    }
+
+    void init () {
+        player = GameObject.Find ("Player");
+        observer = GetComponent<Observer> ();
+        observer.listen (EventEnum.ScoreAdd, onScoreAdd);
+        observer.listen (EventEnum.GameOver, onGameOver);
     }
 
     void restart () {
